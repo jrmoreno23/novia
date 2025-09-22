@@ -77,7 +77,7 @@ body {
 }
 
 button {
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 10px 20px;
   font-size: 1.2em;
   border-radius: 10px;
@@ -102,6 +102,8 @@ button:hover {
 </head>
 <body>
 
+<audio id="music" src="The Night We Met.mp3" loop></audio>
+
 <div class="message" id="message">
   💛 Sherly, hoy en el Día de las Flores Amarillas quiero recordarte que eres mi sol, mi alegría y mi todo. Cada flor me recuerda a ti y cada latido de mi corazón te pertenece. Te amo con todo mi ser y siempre quiero verte feliz. 🌼💛
 </div>
@@ -111,6 +113,7 @@ button:hover {
 <div>
   <button id="pauseBtn">Pausar</button>
   <button id="repeatBtn">Repetir</button>
+  <button id="musicBtn">🎵 Reproducir música</button>
 </div>
 
 <script>
@@ -118,6 +121,8 @@ const messageEl = document.getElementById('message');
 const finalEl = document.getElementById('final');
 const pauseBtn = document.getElementById('pauseBtn');
 const repeatBtn = document.getElementById('repeatBtn');
+const music = document.getElementById('music');
+const musicBtn = document.getElementById('musicBtn');
 
 const originalText = messageEl.textContent;
 let paused = false;
@@ -170,7 +175,7 @@ function showFinalSequence(){
     finalEl.appendChild(span);
     finalTimeouts.push(setTimeout(()=>{
       if(!paused) span.style.opacity = 1;
-    }, i * 500)); // retraso entre cada emoji/initial
+    }, i * 500)); 
   });
 }
 
@@ -180,7 +185,7 @@ function startHearts() {
     if(paused) return;
     const heart = document.createElement('div');
     heart.className = 'heart';
-    const maxX = window.innerWidth - 30; // evita que se salgan de pantalla
+    const maxX = window.innerWidth - 30;
     heart.style.left = Math.random() * maxX + 'px';
     heart.style.animationDuration = 2 + Math.random() * 3 + 's';
     document.body.appendChild(heart);
@@ -200,6 +205,16 @@ repeatBtn.addEventListener('click', () => {
   reset();
   animateMessage();
   startHearts();
+});
+
+musicBtn.addEventListener('click', () => {
+  if(music.paused){
+    music.play();
+    musicBtn.textContent = "⏸ Pausar música";
+  } else {
+    music.pause();
+    musicBtn.textContent = "🎵 Reproducir música";
+  }
 });
 
 // Inicializar animación
