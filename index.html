@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Sherly 💛</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(-45deg, #fff9c4, #fff176, #fff59d, #ffecb3);
+  background-size: 400% 400%;
+  animation: gradientGlow 15s ease infinite;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+}
+
+@keyframes gradientGlow {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.message {
+  text-align: center;
+  font-size: clamp(1.5em, 3vw, 2em);
+  color: #ff6f61;
+  text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 30px #ffeb3b;
+}
+
+.final {
+  display: none;
+  text-align: center;
+  font-size: 5em;
+  color: #ff6f61;
+  text-shadow: 0 0 20px #fff, 0 0 40px #ffd700, 0 0 60px #ffeb3b;
+}
+
+.final span {
+  display: inline-block;
+  animation: beat 1s infinite alternate;
+}
+
+@keyframes beat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.heart {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #ffeb3b;
+  transform: rotate(-45deg);
+  animation: floatHeart 4s infinite;
+}
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #ffeb3b;
+  border-radius: 50%;
+}
+.heart::before { top: -10px; left: 0; }
+.heart::after { left: 10px; top: 0; }
+
+@keyframes floatHeart {
+  0% {transform: translateY(0) rotate(-45deg); opacity: 1;}
+  100% {transform: translateY(-200px) rotate(-45deg); opacity: 0;}
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: #ffd700;
+  color: #fff;
+  text-shadow: 0 0 5px #ff6f61;
+  transition: 0.3s;
+}
+button:hover {
+  background-color: #ffb900;
+}
+
+/* Ajustes móviles */
+@media (max-width: 600px) {
+  .message { font-size: clamp(1em, 4vw, 1.5em); padding: 10px; }
+  .final { font-size: 3em; max-width: 90%; margin: 0 auto; }
+  button { font-size: 1em; padding: 8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="message" id="message">
+  💛 Sherly, hoy en el Día de las Flores Amarillas quiero recordarte que eres mi sol, mi alegría y mi todo. Cada flor me recuerda a ti y cada latido de mi corazón te pertenece. Te amo con todo mi ser y siempre quiero verte feliz. 🌼💛
+</div>
+
+<div class="final" id="final"></div>
+
+<div>
+  <button id="pauseBtn">Pausar</button>
+  <button id="repeatBtn">Repetir</button>
+</div>
+
+<script>
+const messageEl = document.getElementById('message');
+const finalEl = document.getElementById('final');
+const pauseBtn = document.getElementById('pauseBtn');
+const repeatBtn = document.getElementById('repeatBtn');
+
+const originalText = messageEl.textContent;
+let paused = false;
+let animationFrame;
+let heartInterval;
+let letterIndex = 0;
+const finalSequence = ['🌼','J','❤️','S','🌼'];
+let finalTimeouts = [];
+
+// Reiniciar animación
+function reset() {
+  cancelAnimationFrame(animationFrame);
+  clearInterval(heartInterval);
+  finalTimeouts.forEach(t => clearTimeout(t));
+  finalTimeouts = [];
+  messageEl.style.opacity = 1;
+  messageEl.textContent = '';
+  finalEl.style.display = 'none';
+  finalEl.textContent = '';
+  letterIndex = 0;
+}
+
+// Animar mensaje letra por letra
+function animateMessage() {
+  if(!paused && letterIndex < originalText.length){
+    messageEl.textContent += originalText[letterIndex];
+    letterIndex++;
+  }
+
+  if(letterIndex >= originalText.length){
+    setTimeout(() => {
+      if(paused) return;
+      messageEl.style.transition = 'opacity 0.5s';
+      messageEl.style.opacity = 0;
+      finalEl.style.display = 'block';
+      showFinalSequence();
+    }, 300);
+  }
+
+  animationFrame = requestAnimationFrame(animateMessage);
+}
+
+// Secuencia final con transición suave y efecto latido
+function showFinalSequence(){
+  finalSequence.forEach((char, i) => {
+    const span = document.createElement('span');
+    span.textContent = char + ' ';
+    span.style.opacity = 0;
+    span.style.transition = 'opacity 0.5s';
+    finalEl.appendChild(span);
+    finalTimeouts.push(setTimeout(()=>{
+      if(!paused) span.style.opacity = 1;
+    }, i * 500)); // retraso entre cada emoji/initial
+  });
+}
+
+// Corazones flotantes
+function startHearts() {
+  heartInterval = setInterval(() => {
+    if(paused) return;
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    const maxX = window.innerWidth - 30; // evita que se salgan de pantalla
+    heart.style.left = Math.random() * maxX + 'px';
+    heart.style.animationDuration = 2 + Math.random() * 3 + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }, 500);
+}
+
+// Botones
+pauseBtn.addEventListener('click', () => {
+  paused = !paused;
+  pauseBtn.textContent = paused ? 'Continuar' : 'Pausar';
+});
+
+repeatBtn.addEventListener('click', () => {
+  paused = false;
+  pauseBtn.textContent = 'Pausar';
+  reset();
+  animateMessage();
+  startHearts();
+});
+
+// Inicializar animación
+reset();
+animateMessage();
+startHearts();
+</script>
+
+</body>
+</html>
